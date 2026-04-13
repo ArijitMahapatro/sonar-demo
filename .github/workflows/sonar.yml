@@ -1,12 +1,14 @@
-name: SonarCloud Scan
+name: SonarCloud CI
 
 on:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
   sonar:
+    name: Build & Sonar Scan
     runs-on: ubuntu-latest
 
     steps:
@@ -18,10 +20,12 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: maven
 
-      - name: Build and Sonar Scan
-        run: mvn clean verify sonar:sonar \
-          -Dsonar.projectKey=ArijitMahapatro_sonar-demo \
-          -Dsonar.organization=arijitmahapatro \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      - name: Build and run SonarCloud analysis
+        run: |
+          mvn clean verify sonar:sonar \
+            -Dsonar.projectKey=ArijitMahapatro_sonar-demo \
+            -Dsonar.organization=arijitmahapatro \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
