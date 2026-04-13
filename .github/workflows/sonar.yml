@@ -5,22 +5,23 @@ on:
     branches:
       - main
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  
-
 jobs:
-  sonarcloud:
+  sonar:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
-          args: >
-            -Dsonar.projectKey=ArijitMahapatro_sonar-demo
-            -Dsonar.organization=arijitmahapatro
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build and Sonar Scan
+        run: mvn clean verify sonar:sonar \
+          -Dsonar.projectKey=ArijitMahapatro_sonar-demo \
+          -Dsonar.organization=arijitmahapatro \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
